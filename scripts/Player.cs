@@ -16,15 +16,16 @@ public partial class Player : CharacterBody3D
 	}
 	
 	public override void _UnhandledInput(InputEvent @event)
+{
+	if (@event is InputEventMouseMotion mouseMotion)
 	{
-		if (@event is InputEventMouseMotion mouseMotion)
-		{
-			RotateY(-mouseMotion.Relative.X * MouseSensitivity);
-			_rotationX -= mouseMotion.Relative.Y * MouseSensitivity;
-			_rotationX = Mathf.Clamp(_rotationX, -1.5f, 1.5f);
-			_camera.Rotation = new Vector3(_rotationX, 0, 0);
-		}
+		// Kamera vertikal drehen
+		_camera.Rotation = new Vector3(Mathf.Clamp(_camera.Rotation.X - mouseMotion.Relative.Y * MouseSensitivity, -1.5f, 1.5f), _camera.Rotation.Y, _camera.Rotation.Z);
+
+		// Spieler horizontal drehen
+		RotateY(-mouseMotion.Relative.X * MouseSensitivity);
 	}
+}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -44,7 +45,9 @@ public partial class Player : CharacterBody3D
 
 		// Get the input direction and handle the movement/deceleration.
 		// As good practice, you should replace UI actions with custom gameplay actions.
+		
 		Vector2 inputDir = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
+		
 		Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 		if (direction != Vector3.Zero)
 		{
